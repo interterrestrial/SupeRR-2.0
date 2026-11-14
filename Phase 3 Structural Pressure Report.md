@@ -2,11 +2,11 @@
 
 ## Decision
 
-The earlier score/target/required-rate Phase 3 is **superseded**. Phase 2 showed
-that the supplied fields do not support reliable reconstruction of innings
-scores, targets, legal-ball progression, or balls remaining. This corrected
-model therefore measures **structural pressure**, using only verified
-pre-delivery state variables.
+The earlier score/target/required-rate Phase 3 is **superseded**. The updated
+delivery source corrects `extras1_runs` into a run quantity, but Phase 2 still
+cannot establish definitive legal-ball progression or balls remaining for all
+records. This model therefore continues to measure **structural pressure**,
+using only verified pre-delivery state variables.
 
 It must not be interpreted as win probability, required-rate pressure, or a
 complete scoreboard-pressure model.

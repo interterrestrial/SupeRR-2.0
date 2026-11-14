@@ -4,6 +4,8 @@
 
 Phase 4 uses all eligible 2022–2026 evidence with no recent-form weighting. IPL and T20I are evaluated and normalized separately, then combined 50/50 only when both formats meet Reliable eligibility. A missing format is never assigned zero.
 
+This refresh reads the regenerated Phase 3 delivery file with SHA-256 `d6706b02c9e3ac916432319ae3309cf1daedd9a39feecbb93b8a0bb2680f7798`. Its manifest records that source hash for reproducibility.
+
 Phase 4 produces scores and the reliable candidate population. Official ranks and top-10 lists are deferred to Phase 5, where uncertainty and robustness will be assessed.
 
 ## Feasible outcomes
