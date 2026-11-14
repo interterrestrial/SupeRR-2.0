@@ -36,11 +36,35 @@ The six source CSV files provided in the data pack were ingested and audited:
 | `teams.csv` | 353 | 3 | Team identity per comp | Composite key `(comp_id, team_id)` reconciles 100% with match home/away team identifiers. |
 | `competition_team_player_mapping.csv` | 6,413 | 6 | Player registration mapping | Reconciles 100% of delivery-role appearances (striker, non-striker, bowler, dismissed player). |
 
-### 2.2 Player Identity & Name Disambiguation
-- Across all identity observations, 1,217 unique player IDs and 1,210 names were observed.
-- **Seven player names were associated with two distinct IDs:** *Abdul Samad*, *Bashir Ahmad*, *Basil Hameed*, *Haider Ali*, *Mohammad Ali*, *Muhammad Farooq*, and *Rashid Khan*.
-- Forensic audit verified that Abdul Samad (ID 6922: India / SRH vs ID 7446: Canada) and Haider Ali (ID 7338: Pakistan vs ID 28756: Oman) are distinct international players.
-- **Rule Adopted:** Player evaluation must strictly use `player_id` as the primary key; player names are never treated as unique.
+### 2.2 Player Identity Disambiguation & Dropping of Inactive/Phantom IDs
+Across all source files, 1,217 unique player IDs and 1,210 unique names were observed. Exactly **seven names** were associated with two distinct `player_id`s in the raw tables. A complete forensic audit resolves these cases cleanly:
+
+#### Category A: Inactive / "Phantom" IDs Dropped (Zero Deliveries in Eligible Matches)
+Several secondary IDs only existed as unplayed squad roster rows in `competition_team_player_mapping.csv` or in excluded developmental competitions (`comp_id 2670`). Because our analytical dataset is constructed strictly from actual deliveries in eligible completed matches, **these phantom IDs have 0 deliveries and are completely dropped from the delivery pipeline**:
+- **Mohammad Ali (`player_id 3083`):** 0 deliveries bowled or faced across all matches. Dropped.
+- **Bashir Ahmad (`player_id 39479`):** 0 deliveries bowled or faced across all matches. Dropped.
+- **Rashid Khan (`player_id 20172`):** Unplayed Nepal squad registration for the UAE vs Nepal 2026 series (0 deliveries). Dropped.
+- **Muhammad Farooq (`player_id 28978`):** Unplayed squad row in comp 2670 (0 deliveries). Dropped.
+- **Basil Hameed (`player_id 39444`):** An artificial duplicate created in comp 2670 (Emerging Teams Asia Cup). Because comp 2670 is excluded from the eligible population, ID 39444 has **0 deliveries** in the eligible dataset. Dropped.
+
+#### Category B: Active IDs with Negligible High-Pressure Significance
+Even when examining the active IDs for the above players, their high-pressure sample sizes are statistically negligible:
+- **Mohammad Ali (`player_id 20229`):** Played 3 matches for Pakistan; faced only 1 ball under high pressure (0 balls bowled under high pressure).
+- **Bashir Ahmad (`player_id 29833`):** Played 1 match for Afghanistan; faced only 6 balls under high pressure (0 balls bowled under high pressure).
+Both players fall far below any meaningful eligibility threshold ($\ge 50$ or $60$ pressure balls) and have zero impact on pressure rankings.
+
+#### Category C: True Cross-National Namesakes (Different Players, Different Countries)
+Only two same-name pairs exhibit active, meaningful delivery volume in eligible cricket. They represent entirely different human beings playing for different national teams and must **NEVER** be merged:
+1. **Abdul Samad:**
+   - `player_id 7446`: **India** (Sunrisers Hyderabad / Lucknow Super Giants, IPL). Middle-order batter from Jammu & Kashmir (441 balls faced in eligible IPL matches).
+   - `player_id 6922`: **Pakistan** (Pakistan national team & Pakistan A). Middle-order batter (70 balls faced in eligible T20I matches).
+   - *Treatment:* Maintained as distinct entities via `player_id`. Indian Abdul Samad's IPL metrics are never blended with Pakistani Abdul Samad's T20I metrics.
+2. **Haider Ali:**
+   - `player_id 7338`: **Pakistan** (Pakistan national team). Top-order batter (75 balls faced in eligible T20I matches).
+   - `player_id 28756`: **United Arab Emirates** (UAE national team). Left-arm spinner / all-rounder (41 balls faced, 273 balls bowled in eligible T20I matches).
+   - *Treatment:* Maintained as distinct entities via `player_id`.
+
+**Governance Rule:** `player_id` is the sole immutable primary key. Unplayed phantom IDs are eliminated automatically, while legitimate international namesakes remain cleanly segregated.
 
 ### 2.3 Match Population & Exclusion Audit
 The 883 matches in `matches.csv` were audited against competition boundaries and completion criteria:
