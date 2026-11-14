@@ -1,0 +1,30 @@
+# Raw Data Pack
+SupeRR Selector Season 2 | Data Pack/
+phase2_outputs/
+
+# CSV and Large Data Files
+*.csv
+*.parquet
+
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# macOS System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs & Temporary Files
+*.log
+*.tmp
+
