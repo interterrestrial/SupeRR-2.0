@@ -28,3 +28,26 @@ ENV/
 *.log
 *.tmp
 
+# Reproducible analytical outputs stay local; the dashboard has its own
+# reviewed, publishable static snapshot under dashboard/public/.
+/phase1_outputs/
+/phase2_outputs/
+/phase3_outputs/
+/phase4_outputs/
+/phase5_outputs/
+/phase6_outputs/
+/phase7_outputs/
+/phase7_dashboard_data/
+
+# Local tooling, report rendering and working drafts
+/tmp/
+/.impeccable/
+/.openai/
+/.vercel/
+**/.env
+**/.env.*
+!**/.env.example
+*.tsbuildinfo
+~$*
+*.bak
+
